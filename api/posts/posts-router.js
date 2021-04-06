@@ -55,7 +55,7 @@ router.put("/:id", (req, res)=>{
         if (numberOfRecs){
             return Posts.findById(id)
         } else {
-            res.status(404).json({message: "Post Not Found"});
+            res.status(404).json({message: "No records found"});
         }
     })
     .then((post)=>{
@@ -68,6 +68,48 @@ router.put("/:id", (req, res)=>{
     })
 })
 
+//[POST] new Post
+router.post("/", (req, res)=>{
+
+    const newPost = req.body;
+
+    Posts.insert(newPost)
+    .then((postId)=>{
+        return Posts.findById(postId.id);
+    })
+    .then((post)=>{
+        if (post){
+            res.status(200).json(post);
+        } else {
+            res.status(404).json({message: "No Post Found With That Id"})
+        }
+    })
+    .catch((err)=>{
+        res.status(500).json({message: err.message})
+    })
+})
+
+//[DELETE] Post 
+
+router.delete("/:id", (req, res)=>{
+
+    const { id }=req.params;
+
+    Posts.remove(id)
+    .then((numOfRecs)=>{
+        if (numOfRecs){
+            return Posts.findById(id);
+        } else {
+            res.status(404).json({message: "No records matched that id"})
+        }
+    })
+    .then((post)=>{
+        res.status(200).json(post);
+    })
+    .catch((err)=>{
+        res.status(500).json({message: err.message})
+    })
+})
 
 //EXPORTS
 
